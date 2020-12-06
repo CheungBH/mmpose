@@ -36,7 +36,7 @@ model = dict(
     pretrained='mmcls://mobilenet_v2',
     backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopDownDUC',
         in_channels=1280,
         out_channels=channel_cfg['num_output_channels'],
     ),
@@ -98,7 +98,7 @@ test_pipeline = val_pipeline
 
 data_root = '../data/mpii'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=4,
     workers_per_gpu=2,
     train=dict(
         type='TopDownMpiiDataset',

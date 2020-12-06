@@ -9,14 +9,14 @@ DUCs = [640, 320]
 
 @HEADS.register_module()
 class TopDownDUC(nn.Module):
-    def __init__(self, in_channels, out_channels,):
+    def __init__(self, in_channels, out_channels):
         super(TopDownDUC, self).__init__()
         # print(setting)
         self.suffle1 = nn.PixelShuffle(2)
-        self.duc1 = DUC(320, [640, 320][0], upscale_factor=2)
+        self.duc1 = DUC(320, DUCs[0], upscale_factor=2)
         self.duc2 = DUC(int(DUCs[0]/4), DUCs[1], upscale_factor=2)
         self.conv_out = nn.Conv2d(
-            int(DUCs[1]/4), 16, kernel_size=3, stride=1, padding=1)
+            int(DUCs[1]/4), out_channels, kernel_size=3, stride=1, padding=1)
 
     def forward(self, x):
         out = self.suffle1(x)

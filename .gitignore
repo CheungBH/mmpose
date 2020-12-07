@@ -120,3 +120,6 @@ work_dirs/
 *.pth
 
 *.DS_Store
+
+*.onnx
+vis_results

@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=5)
 evaluation = dict(
     interval=1, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
@@ -44,10 +44,10 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='torchvision://resnet18',
+    backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopDownDUC',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
     ),

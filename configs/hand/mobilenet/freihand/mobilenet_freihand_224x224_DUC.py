@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(
     interval=1, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
@@ -104,7 +104,7 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/freihand'
+data_root = '../data/freihand'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,

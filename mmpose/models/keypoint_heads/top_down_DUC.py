@@ -4,16 +4,17 @@ from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
 
 from ..registry import HEADS
 
-DUCs = [640, 320]
+DUCs = [256, 128]
 
 
 @HEADS.register_module()
 class TopDownDUC(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(TopDownDUC, self).__init__()
+        DUCs = [int(in_channels/2), int(in_channels/4)]
         # print(setting)
         self.suffle1 = nn.PixelShuffle(2)
-        self.duc1 = DUC(320, DUCs[0], upscale_factor=2)
+        self.duc1 = DUC(DUCs[1], DUCs[0], upscale_factor=2)
         self.duc2 = DUC(int(DUCs[0]/4), DUCs[1], upscale_factor=2)
         self.conv_out = nn.Conv2d(
             int(DUCs[1]/4), out_channels, kernel_size=3, stride=1, padding=1)

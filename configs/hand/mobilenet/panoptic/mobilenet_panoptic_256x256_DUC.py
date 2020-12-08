@@ -5,7 +5,7 @@ dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=1)
 evaluation = dict(
-    interval=1, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
+    interval=1, metric=['PCKh', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -18,8 +18,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[50, 70])
-total_epochs = 100
+    step=[70, 100])
+total_epochs = 110
 log_config = dict(
     interval=20,
     hooks=[
@@ -44,11 +44,11 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='mmcls://mobilenet_v2',
+    backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
-        in_channels=2048,
+        type='TopDownDUC',
+        in_channels=1280,
         out_channels=channel_cfg['num_output_channels'],
     ),
     train_cfg=dict(),
@@ -60,8 +60,8 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[224, 224],
-    heatmap_size=[56, 56],
+    image_size=[256, 256],
+    heatmap_size=[64, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -104,25 +104,25 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = '../data/freihand'
+data_root = '../data/panoptic'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
-        type='FreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_train.json',
+        type='PanopticDataset',
+        ann_file=f'{data_root}/annotations/panoptic_train.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='FreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_val.json',
+        type='PanopticDataset',
+        ann_file=f'{data_root}/annotations/panoptic_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='FreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_test.json',
+        type='PanopticDataset',
+        ann_file=f'{data_root}/annotations/panoptic_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),

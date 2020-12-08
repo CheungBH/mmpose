@@ -58,6 +58,16 @@ python demo/top_down_img_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x1
     --out-img-root vis_results
 ```
 
+```shell
+python demo/top_down_img_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k.py \
+    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
+    configs/hand/resnet/freihand/res18_freihand_224x224_DUC.py \
+    work_dirs/res18_freihand_224x224_DUC/epoch_100.pth \
+    --img-root ../pose_image/ \
+    --img hand1.jpg \
+    --out-img-root vis_results
+```
+
 ### 2D Hand Video Demo
 
 We also provide a video demo to illustrate the results.
@@ -88,6 +98,15 @@ python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_
     --video-path demo/demo_video.mp4 \
     --out-video-root vis_results
 ```
+```shell
+python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k.py \
+    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
+    configs/hand/mobilenet/freihand/mobilenet_freihand_224x224_DUC.py \
+    work_dirs/mobilenet_freihand_224x224_DUC/latest.pth \
+    --video-path demo/hand_demo2.MOV \
+    --out-video-root vis_results
+```
+
 
 ### Speed Up Inference
 Some tips to speed up MMPose inference:

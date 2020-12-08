@@ -121,9 +121,8 @@ work_dirs/
 
 *.DS_Store
 vis_result*
+*.onnx
 *.MOV
-
-
 
 
 

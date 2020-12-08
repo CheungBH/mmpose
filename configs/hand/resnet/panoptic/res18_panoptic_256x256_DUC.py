@@ -44,11 +44,11 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='torchvision://resnet18',
+    backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
-        in_channels=2048,
+        type='TopDownDUC',
+        in_channels=512,
         out_channels=channel_cfg['num_output_channels'],
     ),
     train_cfg=dict(),

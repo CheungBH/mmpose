@@ -48,7 +48,7 @@ model = dict(
     backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
         type='TopDownDUC',
-        in_channels=2048,
+        in_channels=512,
         out_channels=channel_cfg['num_output_channels'],
     ),
     train_cfg=dict(),

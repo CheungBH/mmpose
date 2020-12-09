@@ -1,5 +1,3 @@
-#-*-coding:utf-8-*-
-
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -35,11 +33,11 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet18',
-    backbone=dict(type='ResNet', depth=18),
+    pretrained='mmcls://mobilenet_v2',
+    backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
         type='TopDown1DUC',
-        in_channels=512,
+        in_channels=1280,
         out_channels=channel_cfg['num_output_channels'],
     ),
     train_cfg=dict(),
@@ -100,7 +98,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/mpii'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownMpiiDataset',
@@ -116,8 +114,8 @@ data = dict(
         pipeline=val_pipeline),
     test=dict(
         type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
+        ann_file=f'{data_root}/annotations/mpii_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline),
+        pipeline=val_pipeline),
 )

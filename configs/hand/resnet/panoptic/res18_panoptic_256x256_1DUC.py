@@ -106,7 +106,7 @@ test_pipeline = val_pipeline
 
 data_root = '../data/panoptic'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
         type='PanopticDataset',

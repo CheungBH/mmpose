@@ -4,7 +4,8 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='PCKh', key_indicator='PCKh')
+evaluation = dict(
+    interval=1, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -17,18 +18,28 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[170, 200])
-total_epochs = 210
+    step=[50, 70])
+total_epochs = 300
 log_config = dict(
-    interval=50, hooks=[
+    interval=20,
+    hooks=[
         dict(type='TextLoggerHook'),
+        # dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
-    num_output_channels=16,
-    dataset_joints=16,
-    dataset_channel=list(range(16)),
-    inference_channel=list(range(16)))
+    num_output_channels=21,
+    dataset_joints=21,
+    dataset_channel=[
+        [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ],
+    ],
+    inference_channel=[
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20
+    ])
 
 # model settings
 model = dict(
@@ -49,21 +60,18 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[256, 256],
-    heatmap_size=[64, 64],
+    image_size=[224, 224],
+    heatmap_size=[56, 56],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
-    inference_channel=channel_cfg['inference_channel'],
-    use_gt_bbox=True,
-    bbox_file=None,
-)
+    inference_channel=channel_cfg['inference_channel'])
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+        type='TopDownGetRandomScaleRotation', rot_factor=20, scale_factor=0.3),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -96,26 +104,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = '../data/mpii'
+data_root = '../data/freihand'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_train.json',
-        img_prefix=f'{data_root}/images/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_train.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
-        img_prefix=f'{data_root}/images/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_val.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_test.json',
-        img_prefix=f'{data_root}/images/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

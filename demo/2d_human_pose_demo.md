@@ -65,7 +65,8 @@ python demo/top_down_img_demo_with_mmdet.py \
     work_dirs/mobilenetv2_mpii_256x256_mobile/latest.pth \
     --img-root tests/data/coco/ \
     --img 000000196141.jpg \
-    --out-img-root vis_results
+    --out-img-root vis_results \
+    --show
 
 
 ### 2D Human Pose Top-Down Video Demo

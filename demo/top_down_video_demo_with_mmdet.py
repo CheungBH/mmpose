@@ -67,7 +67,7 @@ def main():
 
     dataset = pose_model.cfg.data['test']['type']
 
-    cap = cv2.VideoCapture(args.video_path)
+    cap = cv2.VideoCapture(0)
 
     if args.out_video_root == '':
         save_out_video = False

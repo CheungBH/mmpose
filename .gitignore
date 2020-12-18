@@ -123,6 +123,7 @@ work_dirs/
 vis_result*
 *.onnx
 *.MOV
-
+onnx2ncnn
+img
 
 

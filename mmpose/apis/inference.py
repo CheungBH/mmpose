@@ -540,6 +540,7 @@ def vis_pose_result(model,
         pose_limb_color=pose_limb_color,
         kpt_score_thr=kpt_score_thr,
         show=show,
+        wait_time=500,
         out_file=out_file)
 
     return img

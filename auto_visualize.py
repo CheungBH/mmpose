@@ -18,7 +18,7 @@ for model, config in model_config.items():
     {} {} --img-root {} --img {} --out-img-root {} --show".\
             format(config, model, img_path, img_name, os.path.join(dest_path, model_name))
         # cmds.append(cmd)
-        # os.system(cmd)
+        os.system(cmd)
         print(cmd)
 
 # print(cmds)

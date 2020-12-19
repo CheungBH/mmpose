@@ -44,11 +44,11 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='mmcls://mobilenet_v2',
-    backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
+    pretrained='torchvision://resnet18',
+    backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
         type='TopDownDUC',
-        in_channels=1280,
+        in_channels=512,
         out_channels=channel_cfg['num_output_channels'],
     ),
     train_cfg=dict(),
@@ -106,7 +106,7 @@ test_pipeline = val_pipeline
 
 data_root = '../data/panoptic'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='PanopticDataset',

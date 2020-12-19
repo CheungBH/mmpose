@@ -1,8 +1,7 @@
 import os
 
 model_config = {
-    "work_dirs/mobilenetv2_mpii_256x256_DUC/latest.pth":"configs/top_down/mobilenet_v2/mpii/mobilenetv2_mpii_256x256_DUC.py",\
-
+    "work_dirs/mobilenetv2_mpii_256x256_DUC/latest.pth":"configs/top_down/mobilenet_v2/mpii/mobilenetv2_mpii_256x256_DUC.py",
 }
 
 img_path = "img/person"
@@ -17,8 +16,6 @@ for model, config in model_config.items():
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     {} {} --img-root {} --img {} --out-img-root {} --show".\
             format(config, model, img_path, img_name, os.path.join(dest_path, model_name))
-        # cmds.append(cmd)
         os.system(cmd)
         print(cmd)
 
-# print(cmds)

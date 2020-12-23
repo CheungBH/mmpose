@@ -96,7 +96,7 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/mpii'
+data_root = '../data/mpii'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,

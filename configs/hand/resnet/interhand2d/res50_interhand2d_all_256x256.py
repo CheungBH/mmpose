@@ -104,9 +104,9 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/interhand2.6m'
+data_root = '../data/interhand2.6m'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='InterHand2DDataset',

@@ -50,11 +50,11 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='BottomUp',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='torchvision://resnet18',
+    backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
         type='BottomUpSimpleHead',
-        in_channels=2048,
+        in_channels=512,
         num_joints=17,
         tag_per_joint=True,
         with_ae_loss=[True]),
@@ -141,7 +141,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=32,
     workers_per_gpu=1,
     train=dict(
         type='BottomUpCocoDataset',

@@ -1,6 +1,8 @@
 import os
 
-folders = ["work_dirs/mobilenetv2_mpii_256x256", "work_dirs/shufflenetv2_mpii_256x256"]
+# folders = ["work_dirs/mobilenetv2_mpii_256x256", "work_dirs/shufflenetv2_mpii_256x256"]
+src_root = "work_dirs"
+folders = [os.path.join(src_root, file) for file in os.listdir(src_root)]
 
 cmds = []
 

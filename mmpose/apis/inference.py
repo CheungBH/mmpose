@@ -191,6 +191,12 @@ def _inference_single_pose_model(model,
         flip_pairs = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10], [8, 11]]
     elif dataset == 'TopDownMpiiDataset':
         flip_pairs = [[0, 5], [1, 4], [2, 3], [10, 15], [11, 14], [12, 13]]
+    elif dataset == 'TopDownMpiiTrbDataset':
+        flip_pairs = [[0, 1], [2, 3], [4, 5], [6, 7],
+                      [8, 9], [10, 11], [14, 15], [16, 22], [28, 34], [17, 23],
+                      [29, 35], [18, 24], [30, 36], [19, 25], [31,
+                                                               37], [20, 26],
+                      [32, 38], [21, 27], [33, 39]]
     elif dataset in ('OneHand10KDataset', 'FreiHandDataset', 'PanopticDataset',
                      'InterHand2DDataset'):
         flip_pairs = []
@@ -232,17 +238,18 @@ def _inference_single_pose_model(model,
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _, heatmap = model(
+        result = model(
             img=data['img'],
             img_metas=data['img_metas'],
             return_loss=False,
             return_heatmap=return_heatmap)
-    return all_preds[0], heatmap
+
+    return result['preds'][0], result['output_heatmap']
 
 
 def inference_top_down_pose_model(model,
                                   img_or_path,
-                                  person_bboxes,
+                                  person_results,
                                   bbox_thr=None,
                                   format='xywh',
                                   dataset='TopDownCocoDataset',
@@ -258,8 +265,11 @@ def inference_top_down_pose_model(model,
     Args:
         model (nn.Module): The loaded pose model.
         image_name (str| np.ndarray): Image_name
-        person_bboxes: (np.ndarray[P x 4] or [P x 5]): Each person bounding box
-            shaped (4, ) or (5, ), contains 4 box coordinates (and score).
+        person_results (List(dict)): the item in the dict may contain
+            'bbox' and/or 'track_id'.
+            'bbox' (4, ) or (5, ): The person bounding box, which contains
+            4 box coordinates (and score).
+            'track_id' (int): The unique id for each human instance.
         bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
             will be fed into the pose detector. If bbox_thr is None, ignore it.
         format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
@@ -281,37 +291,42 @@ def inference_top_down_pose_model(model,
     """
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
-    # transform the bboxes format to xywh
-    if format == 'xyxy':
-        person_bboxes = _xyxy2xywh(np.array(person_bboxes))
 
     pose_results = []
     returned_outputs = []
 
-    if len(person_bboxes) > 0:
-        if bbox_thr is not None:
-            assert person_bboxes.shape[1] == 5
-            person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
+    with OutputHook(model, outputs=outputs, as_tensor=False) as h:
+        for person_result in person_results:
+            if format == 'xyxy':
+                bbox_xyxy = np.expand_dims(np.array(person_result['bbox']), 0)
+                bbox_xywh = _xyxy2xywh(bbox_xyxy)
+            else:
+                bbox_xywh = np.expand_dims(np.array(person_result['bbox']), 0)
+                bbox_xyxy = _xywh2xyxy(bbox_xywh)
 
-        with OutputHook(model, outputs=outputs, as_tensor=False) as h:
-            for bbox in person_bboxes:
-                pose, heatmap = _inference_single_pose_model(
-                    model,
-                    img_or_path,
-                    bbox,
-                    dataset,
-                    return_heatmap=return_heatmap)
+            if bbox_thr is not None:
+                assert bbox_xywh.shape[1] == 5
+                if bbox_xywh[0, 4] < bbox_thr:
+                    continue
 
-                if return_heatmap:
-                    h.layer_outputs['heatmap'] = heatmap
+            pose, heatmap = _inference_single_pose_model(
+                model,
+                img_or_path,
+                bbox_xywh[0],
+                dataset,
+                return_heatmap=return_heatmap)
 
-                returned_outputs.append(h.layer_outputs)
-                pose_results.append({
-                    'bbox':
-                    _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
-                    'keypoints':
-                    pose
-                })
+            if return_heatmap:
+                h.layer_outputs['heatmap'] = heatmap
+
+            returned_outputs.append(h.layer_outputs)
+
+            person_result['keypoints'] = pose
+
+            if format == 'xywh':
+                person_result['bbox'] = bbox_xyxy[0]
+
+            pose_results.append(person_result)
 
     return pose_results, returned_outputs
 
@@ -379,18 +394,18 @@ def inference_bottom_up_pose_model(model,
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
         # forward the model
         with torch.no_grad():
-            all_preds, _, _, heatmap = model(
+            result = model(
                 img=data['img'],
                 img_metas=data['img_metas'],
                 return_loss=False,
                 return_heatmap=return_heatmap)
 
         if return_heatmap:
-            h.layer_outputs['heatmap'] = heatmap
+            h.layer_outputs['heatmap'] = result['output_heatmap']
 
         returned_outputs.append(h.layer_outputs)
 
-        for pred in all_preds:
+        for pred in result['preds']:
             pose_results.append({
                 'keypoints': pred[:, :3],
             })
@@ -498,6 +513,16 @@ def vis_pose_result(model,
         pose_kpt_color = palette[[
             16, 16, 16, 16, 16, 16, 7, 7, 0, 0, 9, 9, 9, 9, 9, 9
         ]]
+
+    elif dataset == 'TopDownMpiiTrbDataset':
+        skeleton = [[13, 14], [14, 1], [14, 2], [1, 3], [2, 4], [3, 5], [4, 6],
+                    [1, 7], [2, 8], [7, 8], [7, 9], [8, 10], [9, 11], [10, 12],
+                    [15, 16], [17, 18], [19, 20], [21, 22], [23, 24], [25, 26],
+                    [27, 28], [29, 30], [31, 32], [33, 34], [35, 36], [37, 38],
+                    [39, 40]]
+
+        pose_limb_color = palette[[16] * 14 + [19] * 13]
+        pose_kpt_color = palette[[16] * 14 + [0] * 26]
 
     elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
                      'PanopticDataset'):

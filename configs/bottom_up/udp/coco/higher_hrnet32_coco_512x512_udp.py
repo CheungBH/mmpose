@@ -3,8 +3,8 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=5)
-evaluation = dict(interval=300, metric='mAP', key_indicator='AP')
+checkpoint_config = dict(interval=50)
+evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
@@ -92,7 +92,17 @@ model = dict(
         num_deconv_kernels=[4],
         num_basic_blocks=4,
         cat_output=[True],
-        with_ae_loss=[True, False]),
+        with_ae_loss=[True, False],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0])),
     train_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         img_size=data_cfg['image_size']),
@@ -113,19 +123,7 @@ model = dict(
         adjust=True,
         refine=True,
         flip_test=True,
-        use_udp=True),
-    loss_pose=dict(
-        type='MultiLossFactory',
-        num_joints=17,
-        num_stages=2,
-        ae_loss_type='exp',
-        with_ae_loss=[True, False],
-        push_loss_factor=[0.001, 0.001],
-        pull_loss_factor=[0.001, 0.001],
-        with_heatmaps_loss=[True, True],
-        heatmaps_loss_factor=[1.0, 1.0],
-    ),
-)
+        use_udp=True))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),

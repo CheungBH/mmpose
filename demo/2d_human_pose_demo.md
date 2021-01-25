@@ -25,11 +25,18 @@ python demo/top_down_img_demo.py \
     --out-img-root vis_results
 ```
 
+
+
+To run demos on CPU:
+
+```shell
 python demo/top_down_img_demo.py \
-    configs/top_down/mobilenet_v2/mpii/mobilenetv2_mpii_256x256_mobile.py \
-    work_dirs/mobilenetv2_mpii_256x256_mobile/latest.pth \
+    configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
+    --device=cpu
+```
 
 #### Using mmdet for human bounding box detection
 
@@ -151,7 +158,7 @@ Some tips to speed up MMPose inference:
 For top-down models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
-1. set `unbiased_decoding=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+1. set `post_process='default'` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L52).
 
 For bottom-up models, try to edit the config file. For example,
 

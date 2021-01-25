@@ -305,8 +305,9 @@ class TopDownGenerateTarget:
                 y = y[:, None]
 
                 if target_weight[joint_id] > 0.5:
-                    target[joint_id] = np.exp(
-                        -((x - mu_x)**2 + (y - mu_y)**2) / (2 * sigma**2))
+                    target[joint_id] = np.exp(-((x - mu_x)**2 +
+                                                (y - mu_y)**2) /
+                                              (2 * sigma**2))
         else:
             for joint_id in range(num_joints):
                 target_weight[joint_id] = joints_3d_visible[joint_id, 0]
@@ -436,6 +437,11 @@ class TopDownGenerateTarget:
 
             tmp_size = factor * 3
 
+            # prepare for gaussian
+            size = 2 * tmp_size + 1
+            x = np.arange(0, size, 1, np.float32)
+            y = x[:, None]
+
             for joint_id in range(num_joints):
                 feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
                 mu_x = int(joints_3d[joint_id][0] / feat_stride[0] + 0.5)
@@ -450,9 +456,6 @@ class TopDownGenerateTarget:
                     continue
 
                 # # Generate gaussian
-                size = 2 * tmp_size + 1
-                x = np.arange(0, size, 1, np.float32)
-                y = x[:, None]
                 mu_x_ac = joints_3d[joint_id][0] / feat_stride[0]
                 mu_y_ac = joints_3d[joint_id][1] / feat_stride[1]
                 x0 = y0 = size // 2

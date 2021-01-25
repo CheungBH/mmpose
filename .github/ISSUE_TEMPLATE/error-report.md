@@ -1,14 +1,11 @@
-______________________________________________________________________
-
-```
+---
 name: Error report
 about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
-```
 
-______________________________________________________________________
+---
 
 Thanks for your error report and we appreciate it a lot.
 If you feel we have helped you, give us a STAR! :satisfied:

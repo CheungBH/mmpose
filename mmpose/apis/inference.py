@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import mmcv
 import numpy as np
 import torch
@@ -117,18 +118,23 @@ class LoadImage:
         """Call function to load images into results.
 
         Args:
-            results (dict): A result dict contains the file name
-                of the image to be read.
+            results (dict): A result dict contains the img_or_path.
 
         Returns:
             dict: ``results`` will be returned containing loaded image.
         """
         if isinstance(results['img_or_path'], str):
             results['image_file'] = results['img_or_path']
-        else:
+            img = mmcv.imread(results['img_or_path'], self.color_type,
+                              self.channel_order)
+        elif isinstance(results['img_or_path'], np.ndarray):
             results['image_file'] = ''
-        img = mmcv.imread(results['img_or_path'], self.color_type,
-                          self.channel_order)
+            if self.color_type == 'color' and self.channel_order == 'rgb':
+                img = cv2.cvtColor(results['img_or_path'], cv2.COLOR_BGR2RGB)
+        else:
+            raise TypeError('"img_or_path" must be a numpy array or a str or '
+                            'a pathlib.Path object')
+
         results['img'] = img
         return results
 
@@ -144,7 +150,7 @@ def _inference_single_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        image_name (str | np.ndarray):Image_name
+        img_or_path (str | np.ndarray): Image filename or loaded image.
         bbox (list | np.ndarray): Bounding boxes (with scores),
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
@@ -160,7 +166,9 @@ def _inference_single_pose_model(model,
     device = next(model.parameters()).device
 
     # build the data pipeline
-    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
     assert len(bbox) in [4, 5]
@@ -200,6 +208,36 @@ def _inference_single_pose_model(model,
     elif dataset in ('OneHand10KDataset', 'FreiHandDataset', 'PanopticDataset',
                      'InterHand2DDataset'):
         flip_pairs = []
+    elif dataset in 'Face300WDataset':
+        flip_pairs = [[0, 16], [1, 15], [2, 14], [3, 13], [4, 12], [5, 11],
+                      [6, 10], [7, 9], [17, 26], [18, 25], [19, 24], [20, 23],
+                      [21, 22], [31, 35], [32, 34], [36, 45], [37,
+                                                               44], [38, 43],
+                      [39, 42], [40, 47], [41, 46], [48, 54], [49,
+                                                               53], [50, 52],
+                      [61, 63], [60, 64], [67, 65], [58, 56], [59, 55]]
+
+    elif dataset in 'FaceAFLWDataset':
+        flip_pairs = [[0, 5], [1, 4], [2, 3], [6, 11], [7, 10], [8, 9],
+                      [12, 14], [15, 17]]
+
+    elif dataset in 'FaceCOFWDataset':
+        flip_pairs = [[0, 1], [4, 6], [2, 3], [5, 7], [8, 9], [10, 11],
+                      [12, 14], [16, 17], [13, 15], [18, 19], [22, 23]]
+
+    elif dataset in 'FaceWFLWDataset':
+        flip_pairs = [[0, 32], [1, 31], [2, 30], [3, 29], [4, 28], [5, 27],
+                      [6, 26], [7, 25], [8, 24], [9, 23], [10, 22], [11, 21],
+                      [12, 20], [13, 19], [14, 18], [15, 17], [33,
+                                                               46], [34, 45],
+                      [35, 44], [36, 43], [37, 42], [38, 50], [39,
+                                                               49], [40, 48],
+                      [41, 47], [60, 72], [61, 71], [62, 70], [63,
+                                                               69], [64, 68],
+                      [65, 75], [66, 74], [67, 73], [55, 59], [56,
+                                                               58], [76, 82],
+                      [77, 81], [78, 80], [87, 83], [86, 84], [88, 92],
+                      [89, 91], [95, 93], [96, 97]]
     else:
         raise NotImplementedError()
 
@@ -264,7 +302,7 @@ def inference_top_down_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        image_name (str| np.ndarray): Image_name
+        img_or_path (str| np.ndarray): Image filename or loaded image.
         person_results (List(dict)): the item in the dict may contain
             'bbox' and/or 'track_id'.
             'bbox' (4, ) or (5, ): The person bounding box, which contains
@@ -344,7 +382,7 @@ def inference_bottom_up_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        image_name (str| np.ndarray): Image_name.
+        img_or_path (str| np.ndarray): Image filename or loaded image.
         return_heatmap (bool) : Flag to return heatmap, default: False
         outputs (list(str) | tuple(str)) : Names of layers whose outputs
             need to be returned, default: None
@@ -365,7 +403,9 @@ def inference_bottom_up_pose_model(model,
     device = next(model.parameters()).device
 
     # build the data pipeline
-    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
     # prepare data
@@ -485,9 +525,7 @@ def vis_pose_result(model,
             ]]
         pose_kpt_color = palette[
             [16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0] +
-            [0, 0, 0, 0, 0, 0] + [
-                19,
-            ] * (68 + 42)]
+            [0, 0, 0, 0, 0, 0] + [19] * (68 + 42)]
         radius = 1
 
     elif dataset == 'TopDownAicDataset':
@@ -552,6 +590,42 @@ def vis_pose_result(model,
             0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16, 16, 16,
             0
         ]]
+
+    elif dataset == 'Face300WDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 68]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'FaceAFLWDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 19]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'FaceCOFWDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 29]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'FaceWFLWDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 98]
+        radius = 3
+        kpt_score_thr = 0
 
     else:
         raise NotImplementedError()

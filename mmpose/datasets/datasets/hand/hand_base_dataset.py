@@ -107,7 +107,7 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
 
         # pixel std is 200.0
         scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
+        # padding to include proper amount of context
         scale = scale * padding
 
         return center, scale
@@ -146,7 +146,7 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
             auc_nor (float): AUC normalization factor, default as 30 pixel.
 
         Returns:
-            dict: Evaluation results for evaluation metric.
+            List: Evaluation results for evaluation metric.
         """
         info_str = []
 

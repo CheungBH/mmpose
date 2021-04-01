@@ -25,6 +25,7 @@ MMPose supports multiple tasks. Please follow the corresponding guidelines for d
 
 - [2D Body Keypoint](/docs/tasks/2d_body_keypoint.md)
 - [2D Hand Keypoint](/docs/tasks/2d_hand_keypoint.md)
+- [2D Face Keypoint](/docs/tasks/2d_face_keypoint.md)
 - [2D WholeBody Keypoint](/docs/tasks/2d_wholebody_keypoint.md)
 - [3D Human Mesh Recovery](/docs/tasks/3d_body_mesh.md)
 
@@ -235,6 +236,6 @@ python tools/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 
 ## Tutorials
 
-Currently, we provide some tutorials for users to [finetune model](tutorials/1_finetune.md),
+Currently, we provide some tutorials for users to [learn about configs](tutorials/0_config.md), [finetune model](tutorials/1_finetune.md),
 [add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
 [add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).

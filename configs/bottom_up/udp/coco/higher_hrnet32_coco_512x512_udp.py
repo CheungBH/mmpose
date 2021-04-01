@@ -8,7 +8,7 @@ evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.001,
+    lr=0.0015,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -167,9 +167,7 @@ val_pipeline = [
         use_udp=True),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
             'center', 'scale', 'flip_index'
@@ -180,8 +178,8 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=12,
-    workers_per_gpu=1,
+    samples_per_gpu=24,
+    workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',

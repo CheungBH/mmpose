@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
-                                         get_affine_transform)
-from mmpose.datasets.pipelines import get_warp_matrix, warp_affine_joints
+                                         get_affine_transform, get_warp_matrix,
+                                         warp_affine_joints)
 from mmpose.datasets.registry import PIPELINES
 
 
@@ -12,8 +12,9 @@ class TopDownRandomFlip:
     """Data augmentation with random image flip.
 
     Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
-    'ann_info'. Modifies key: 'img', 'joints_3d', 'joints_3d_visible' and
-    'center'.
+    'ann_info'.
+    Modifies key: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
+    'flipped'.
 
     Args:
         flip (bool): Option to perform random flip.
@@ -30,9 +31,12 @@ class TopDownRandomFlip:
         joints_3d_visible = results['joints_3d_visible']
         center = results['center']
 
+        # A flag indicating whether the image is flipped,
+        # which can be used by child class.
+        flipped = False
         if np.random.rand() <= self.flip_prob:
+            flipped = True
             img = img[:, ::-1, :]
-
             joints_3d, joints_3d_visible = fliplr_joints(
                 joints_3d, joints_3d_visible, img.shape[1],
                 results['ann_info']['flip_pairs'])
@@ -42,6 +46,7 @@ class TopDownRandomFlip:
         results['joints_3d'] = joints_3d
         results['joints_3d_visible'] = joints_3d_visible
         results['center'] = center
+        results['flipped'] = flipped
 
         return results
 
@@ -564,7 +569,7 @@ class TopDownGenerateTarget:
                 factors = self.sigma
                 channel_factor = 1
             if isinstance(factors, list):
-                num_factors = len(self.kernel)
+                num_factors = len(factors)
                 cfg = results['ann_info']
                 num_joints = cfg['num_joints']
                 W, H = cfg['heatmap_size']
@@ -590,4 +595,86 @@ class TopDownGenerateTarget:
         results['target'] = target
         results['target_weight'] = target_weight
 
+        return results
+
+
+@PIPELINES.register_module()
+class TopDownGenerateTargetRegression:
+    """Generate the target regression vector (coordinates).
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified keys:
+    'target', and 'target_weight'.
+    """
+
+    def __init__(self):
+        pass
+
+    def _generate_target(self, cfg, joints_3d, joints_3d_visible):
+        """Generate the target regression vector.
+
+        Args:
+            cfg (dict): data config
+            joints_3d: np.ndarray([num_joints, 3])
+            joints_3d_visible: np.ndarray([num_joints, 3])
+        Returns:
+             target, target_weight(1: visible, 0: invisible)
+        """
+        image_size = cfg['image_size']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
+
+        mask = (joints_3d[:, 0] >= 0) * (
+            joints_3d[:, 0] <= image_size[0] - 1) * (joints_3d[:, 1] >= 0) * (
+                joints_3d[:, 1] <= image_size[1] - 1)
+
+        target = joints_3d[:, :2] / image_size
+
+        target = target.astype(np.float32)
+        target_weight = joints_3d_visible[:, :2] * mask[:, None]
+
+        if use_different_joint_weights:
+            target_weight = np.multiply(target_weight, joint_weights)
+
+        return target, target_weight
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = results['joints_3d']
+        joints_3d_visible = results['joints_3d_visible']
+
+        target, target_weight = self._generate_target(results['ann_info'],
+                                                      joints_3d,
+                                                      joints_3d_visible)
+
+        results['target'] = target
+        results['target_weight'] = target_weight
+
+        return results
+
+
+@PIPELINES.register_module()
+class TopDownRandomTranslation:
+    """Data augmentation with random translation.
+
+    Required key: 'scale' and 'center'. Modifies key: 'center'.
+
+    Notes:
+        bbox height: H
+        bbox width: W
+
+    Args:
+        trans_factor (float): Translating center to
+        ``[-trans_factor, trans_factor] * [W, H] + center``.
+    """
+
+    def __init__(self, trans_factor=0.15):
+        self.trans_factor = trans_factor
+
+    def __call__(self, results):
+        """Perform data augmentation with random translation."""
+        center = results['center']
+        scale = results['scale']
+        # reference bbox size is [200, 200] pixels
+        center += self.trans_factor * (2 * np.random.rand(2) - 1) * scale * 200
+        results['center'] = center
         return results

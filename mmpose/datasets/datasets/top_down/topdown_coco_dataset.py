@@ -90,6 +90,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
+        # 'pycocotools/cocoeval.py#L523'
         self.sigmas = np.array([
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89
@@ -249,7 +251,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         # pixel std is 200.0
         scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
+        # padding to include proper amount of context
         scale = scale * 1.25
 
         return center, scale
@@ -312,11 +314,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         Args:
             outputs (list(dict))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, ['data/coco/val2017
+                :image_paths (list[str]): For example, ['data/coco/val2017
                     /000000393226.jpg']
                 :heatmap (np.ndarray[N, K, H, W]): model output heatmap
                 :bbox_id (list(int)).
@@ -379,7 +381,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
-                keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
+                keep = nms(img_kpts, oks_thr, sigmas=self.sigmas)
                 valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
                 valid_kpts.append(img_kpts)

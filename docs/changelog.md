@@ -1,5 +1,134 @@
 # Changelog
 
+## v0.14.0 (06/05/2021)
+
+**Highlights**
+
+1. Support animal pose estimation with 7 popular datasets.
+1. Support "A simple yet effective baseline for 3d human pose estimation" (ICCV'17).
+
+**New Features**
+
+- Support "A simple yet effective baseline for 3d human pose estimation" (ICCV'17)  ([\#554](https://github.com/open-mmlab/mmpose/pull/554),[\#558](https://github.com/open-mmlab/mmpose/pull/558),[\#566](https://github.com/open-mmlab/mmpose/pull/566),[\#570](https://github.com/open-mmlab/mmpose/pull/570),[\#589](https://github.com/open-mmlab/mmpose/pull/589))
+- Support animal pose estimation ([\#559](https://github.com/open-mmlab/mmpose/pull/559),[\#561](https://github.com/open-mmlab/mmpose/pull/561),[\#563](https://github.com/open-mmlab/mmpose/pull/563),[\#571](https://github.com/open-mmlab/mmpose/pull/571),[\#603](https://github.com/open-mmlab/mmpose/pull/603),[\#605](https://github.com/open-mmlab/mmpose/pull/605))
+- Support Horse-10 dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), MacaquePose dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Vinegar Fly dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Desert Locust dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Grevy's Zebra dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), ATRW dataset ([\#571](https://github.com/open-mmlab/mmpose/pull/571)), and Animal-Pose dataset ([\#603](https://github.com/open-mmlab/mmpose/pull/603)).
+- Support bottom-up pose tracking demo ([\#574](https://github.com/open-mmlab/mmpose/pull/574)).
+- Support FP16 training ([\#584](https://github.com/open-mmlab/mmpose/pull/584),[\#616](https://github.com/open-mmlab/mmpose/pull/616),[\#626](https://github.com/open-mmlab/mmpose/pull/626)).
+- Support NMS for bottom-up ([\#609](https://github.com/open-mmlab/mmpose/pull/609)).
+
+**Bug Fixes**
+
+- Fix bugs in the top-down demo, when there are no people in the images ([\#569](https://github.com/open-mmlab/mmpose/pull/569)).
+- Fix the links in the doc ([\#612](https://github.com/open-mmlab/mmpose/pull/612)).
+
+**Improvements**
+
+- Speed up top-down inference ([\#560](https://github.com/open-mmlab/mmpose/pull/560))
+- Update github CI ([\#562](https://github.com/open-mmlab/mmpose/pull/562),[\#564](https://github.com/open-mmlab/mmpose/pull/564))
+- Update Readme ([\#578](https://github.com/open-mmlab/mmpose/pull/578),[\#579](https://github.com/open-mmlab/mmpose/pull/579),[\#580](https://github.com/open-mmlab/mmpose/pull/580),[\#592](https://github.com/open-mmlab/mmpose/pull/592),[\#599](https://github.com/open-mmlab/mmpose/pull/599),[\#600](https://github.com/open-mmlab/mmpose/pull/600),[\#607](https://github.com/open-mmlab/mmpose/pull/607))
+- Update Faq ([\#587](https://github.com/open-mmlab/mmpose/pull/587),[\#610](https://github.com/open-mmlab/mmpose/pull/610))
+
+## v0.13.0 (31/03/2021)
+
+**Highlights**
+
+1. Support Wingloss.
+1. Support RHD hand dataset.
+
+**New Features**
+
+- Support Wingloss ([\#482](https://github.com/open-mmlab/mmpose/pull/482))
+- Support RHD hand dataset ([\#523](https://github.com/open-mmlab/mmpose/pull/523), [\#551](https://github.com/open-mmlab/mmpose/pull/551))
+- Support Human3.6m dataset for 3d keypoint detection ([\#518](https://github.com/open-mmlab/mmpose/pull/518), [\#527](https://github.com/open-mmlab/mmpose/pull/527))
+- Support TCN model for 3d keypoint detection ([\#521](https://github.com/open-mmlab/mmpose/pull/521), [\#522](https://github.com/open-mmlab/mmpose/pull/522))
+- Support Interhand3D model for 3d hand detection ([\#536](https://github.com/open-mmlab/mmpose/pull/536))
+- Support Multi-task detector ([\#480](https://github.com/open-mmlab/mmpose/pull/480))
+
+**Bug Fixes**
+
+- Fix PCKh@0.1 calculation ([\#516](https://github.com/open-mmlab/mmpose/pull/516))
+- Fix unittest ([\#529](https://github.com/open-mmlab/mmpose/pull/529))
+- Fix circular importing ([\#542](https://github.com/open-mmlab/mmpose/pull/542))
+- Fix bugs in bottom-up keypoint score ([\#548](https://github.com/open-mmlab/mmpose/pull/548))
+
+**Improvements**
+
+- Update config & checkpoints ([\#525](https://github.com/open-mmlab/mmpose/pull/525), [\#546](https://github.com/open-mmlab/mmpose/pull/546))
+- Fix typos ([\#514](https://github.com/open-mmlab/mmpose/pull/514), [\#519](https://github.com/open-mmlab/mmpose/pull/519), [\#532](https://github.com/open-mmlab/mmpose/pull/532), [\#537](https://github.com/open-mmlab/mmpose/pull/537), )
+- Speed up post processing ([\#535](https://github.com/open-mmlab/mmpose/pull/535))
+- Update mmcv version dependency ([\#544](https://github.com/open-mmlab/mmpose/pull/544))
+
+## v0.12.0 (28/02/2021)
+
+**Highlights**
+
+1. Support DeepPose algorithm.
+
+**New Features**
+
+- Support DeepPose algorithm ([\#446](https://github.com/open-mmlab/mmpose/pull/446), [\#461](https://github.com/open-mmlab/mmpose/pull/461))
+- Support interhand3d dataset ([\#468](https://github.com/open-mmlab/mmpose/pull/468))
+- Support Albumentation pipeline ([\#469](https://github.com/open-mmlab/mmpose/pull/469))
+- Support PhotometricDistortion pipeline ([\#485](https://github.com/open-mmlab/mmpose/pull/485))
+- Set seed option for training ([\#493](https://github.com/open-mmlab/mmpose/pull/493))
+- Add demos for face keypoint detection ([\#502](https://github.com/open-mmlab/mmpose/pull/502))
+
+**Bug Fixes**
+
+- Change channel order according to configs ([\#504](https://github.com/open-mmlab/mmpose/pull/504))
+- Fix `num_factors` in UDP encoding ([\#495](https://github.com/open-mmlab/mmpose/pull/495))
+- Fix configs ([\#456](https://github.com/open-mmlab/mmpose/pull/456))
+
+**Breaking Changes**
+
+- Refactor configs for wholebody pose estimation ([\#487](https://github.com/open-mmlab/mmpose/pull/487), [\#491](https://github.com/open-mmlab/mmpose/pull/491))
+- Rename `decode` function for heads ([\#481](https://github.com/open-mmlab/mmpose/pull/481))
+
+**Improvements**
+
+- Update config & checkpoints ([\#453](https://github.com/open-mmlab/mmpose/pull/453),[\#484](https://github.com/open-mmlab/mmpose/pull/484),[\#487](https://github.com/open-mmlab/mmpose/pull/487))
+- Add README in Chinese ([\#462](https://github.com/open-mmlab/mmpose/pull/462))
+- Add tutorials about configs  ([\#465](https://github.com/open-mmlab/mmpose/pull/465))
+- Add demo videos for various tasks ([\#499](https://github.com/open-mmlab/mmpose/pull/499), [\#503](https://github.com/open-mmlab/mmpose/pull/503))
+- Update docs about MMPose installation ([\#467](https://github.com/open-mmlab/mmpose/pull/467), [\#505](https://github.com/open-mmlab/mmpose/pull/505))
+- Rename `stat.py` to `stats.py` ([\#483](https://github.com/open-mmlab/mmpose/pull/483))
+- Fix typos ([\#463](https://github.com/open-mmlab/mmpose/pull/463), [\#464](https://github.com/open-mmlab/mmpose/pull/464), [\#477](https://github.com/open-mmlab/mmpose/pull/477), [\#481](https://github.com/open-mmlab/mmpose/pull/481))
+- latex to bibtex ([\#471](https://github.com/open-mmlab/mmpose/pull/471))
+- Update FAQ ([\#466](https://github.com/open-mmlab/mmpose/pull/466))
+
+## v0.11.0 (31/01/2021)
+
+**Highlights**
+
+1. Support fashion landmark detection.
+1. Support face keypoint detection.
+1. Support pose tracking with MMTracking.
+
+**New Features**
+
+- Support fashion landmark detection (DeepFashion) ([\#413](https://github.com/open-mmlab/mmpose/pull/413))
+- Support face keypoint detection (300W, AFLW, COFW, WFLW) ([\#367](https://github.com/open-mmlab/mmpose/pull/367))
+- Support pose tracking demo with MMTracking ([\#427](https://github.com/open-mmlab/mmpose/pull/427))
+- Support face demo ([\#443](https://github.com/open-mmlab/mmpose/pull/443))
+- Support AIC dataset for bottom-up methods ([\#438](https://github.com/open-mmlab/mmpose/pull/438), [\#449](https://github.com/open-mmlab/mmpose/pull/449))
+
+**Bug Fixes**
+
+- Fix multi-batch training ([\#434](https://github.com/open-mmlab/mmpose/pull/434))
+- Fix sigmas in AIC dataset ([\#441](https://github.com/open-mmlab/mmpose/pull/441))
+- Fix config file ([\#420](https://github.com/open-mmlab/mmpose/pull/420))
+
+**Breaking Changes**
+
+- Refactor Heads ([\#382](https://github.com/open-mmlab/mmpose/pull/382))
+
+**Improvements**
+
+- Update readme ([\#409](https://github.com/open-mmlab/mmpose/pull/409), [\#412](https://github.com/open-mmlab/mmpose/pull/412), [\#415](https://github.com/open-mmlab/mmpose/pull/415), [\#416](https://github.com/open-mmlab/mmpose/pull/416), [\#419](https://github.com/open-mmlab/mmpose/pull/419), [\#421](https://github.com/open-mmlab/mmpose/pull/421), [\#422](https://github.com/open-mmlab/mmpose/pull/422), [\#424](https://github.com/open-mmlab/mmpose/pull/424), [\#425](https://github.com/open-mmlab/mmpose/pull/425), [\#435](https://github.com/open-mmlab/mmpose/pull/435), [\#436](https://github.com/open-mmlab/mmpose/pull/436), [\#437](https://github.com/open-mmlab/mmpose/pull/437), [\#444](https://github.com/open-mmlab/mmpose/pull/444), [\#445](https://github.com/open-mmlab/mmpose/pull/445))
+- Add GAP (global average pooling) neck ([\#414](https://github.com/open-mmlab/mmpose/pull/414))
+- Speed up ([\#411](https://github.com/open-mmlab/mmpose/pull/411), [\#423](https://github.com/open-mmlab/mmpose/pull/423))
+- Support COCO test-dev test ([\#433](https://github.com/open-mmlab/mmpose/pull/433))
+
 ## v0.10.0 (31/12/2020)
 
 **Highlights**

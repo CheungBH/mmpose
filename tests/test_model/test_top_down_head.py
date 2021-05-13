@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import (TopDownMSMUHead, TopDownMultiStageHead,
+from mmpose.models import (FcHead, TopDownMSMUHead, TopDownMultiStageHead,
                            TopDownSimpleHead)
 
 
@@ -15,6 +15,10 @@ def test_top_down_simple_head():
             in_channels=512,
             extra=[],
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    with pytest.raises(TypeError):
+        head = TopDownSimpleHead(
+            out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
 
     # test num deconv layers
     with pytest.raises(ValueError):
@@ -89,6 +93,14 @@ def test_top_down_simple_head():
         in_channels=512,
         extra={'final_conv_kernel': 0},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    head = TopDownSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True),
+        extra=dict(
+            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )))
+    assert len(head.final_layer) == 4
 
     head = TopDownSimpleHead(
         out_channels=3,
@@ -336,6 +348,30 @@ def test_top_down_msmu_head():
     assert out[0].shape == torch.Size([1, 17, 64, 48])
 
     head.init_weights()
+
+
+def test_fc_head():
+    """Test fc head."""
+    head = FcHead(
+        in_channels=2048,
+        num_joints=17,
+        loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True))
+
+    head.init_weights()
+
+    input_shape = (1, 2048)
+    inputs = _demo_inputs(input_shape)
+    out = head(inputs)
+    assert out.shape == torch.Size([1, 17, 2])
+
+    loss = head.get_loss(out, out, torch.ones_like(out))
+    assert torch.allclose(loss['reg_loss'], torch.tensor(0.))
+
+    _ = head.inference_model(inputs)
+    _ = head.inference_model(inputs, [])
+
+    acc = head.get_accuracy(out, out, torch.ones_like(out))
+    assert acc['acc_pose'] == 1.
 
 
 def _demo_inputs(input_shape=(1, 3, 64, 64)):

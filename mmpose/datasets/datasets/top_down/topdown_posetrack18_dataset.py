@@ -91,6 +91,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # Adapted from COCO dataset
         self.sigmas = np.array([
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89
@@ -127,9 +128,9 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
         Args:
             outputs (list(preds, boxes, image_paths))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
                 :image_paths (list[str]): For example, ['val/010016_mpii_test
                     /000024.jpg']
@@ -198,7 +199,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
-                keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
+                keep = nms(img_kpts, oks_thr, sigmas=self.sigmas)
                 valid_kpts[image_id].append(
                     [img_kpts[_keep] for _keep in keep])
             else:

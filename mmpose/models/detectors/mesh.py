@@ -295,7 +295,7 @@ class ParametricMesh(BasePose):
             batch_size: N
             num_img_channel: C (Default: 3)
             img height: imgH
-            img weight: imgW
+            img width: imgW
 
         Args:
             img (torch.Tensor[N x C x imgH x imgW]): Input images.
@@ -316,3 +316,6 @@ class ParametricMesh(BasePose):
         if return_loss:
             return self.forward_train(img, img_metas, **kwargs)
         return self.forward_test(img, img_metas, **kwargs)
+
+    def show_result(self, **kwargs):
+        pass

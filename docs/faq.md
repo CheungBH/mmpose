@@ -9,7 +9,18 @@ If the contents here do not cover your issue, please create an issue using the [
 - **Unable to install xtcocotools**
 
   1. Try to install it using pypi mannually `pip install xtcocotools`.
-  1. If step1 does not work. Try to install it from source.
+  1. If step1 does not work. Try to install it from [source](https://github.com/jin-s13/xtcocoapi).
+
+  ```
+  git clone https://github.com/jin-s13/xtcocoapi
+  cd xtcocoapi
+  python setup.py install
+  ```
+
+- **No matching distribution found for xtcocotools>=1.6**
+
+  1. Install cython by `pip install cython`.
+  1. Install xtcocotools from [source](https://github.com/jin-s13/xtcocoapi).
 
   ```
   git clone https://github.com/jin-s13/xtcocoapi
@@ -71,6 +82,11 @@ If the contents here do not cover your issue, please create an issue using the [
 
   Use smaller log interval. For example, change `interval=50` to `interval=1` in the [config](/configs/top_down/resnet/coco/res50_coco_256x192.py#L23).
 
+- **How to fix stages of backbone when finetuning a model ?**
+
+    You can refer to [`def _freeze_stages()`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L618) and [`frozen_stages`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L498),
+    reminding to set `find_unused_parameters = True` in config files for distributed training or testing.
+
 ## Evaluation
 
 - **How to evaluate on MPII test dataset?**
@@ -89,10 +105,17 @@ If the contents here do not cover your issue, please create an issue using the [
 
   1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
   1. set `post_process='default'` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+  1. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
   For bottom-up models, try to edit the config file. For example,
 
-  1. set `flip_test=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L80).
-  1. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L78).
-  1. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L79).
+  1. set `flip_test=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91).
+  1. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89).
+  1. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90).
   1. use smaller input image size in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
+
+## Deployment
+
+- **Why is the onnx model converted by mmpose throwing error when converting to other frameworks such as TensorRT?**
+
+    For now, we can only make sure that models in mmpose are onnx-compatible. However, some operations in onnx may be unsupported by your target framework for deployment, e.g. TensorRT in [this issue](https://github.com/open-mmlab/mmaction2/issues/414). When such situation occurs, we suggest you raise an issue and ask the community to help as long as `pytorch2onnx.py` works well and is verified numerically.

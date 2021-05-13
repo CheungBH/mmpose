@@ -2,9 +2,9 @@
 
 ## Introduction
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
-```latex
+```bibtex
 @inProceedings{kanazawaHMR18,
   title={End-to-end Recovery of Human Shape and Pose},
   author = {Angjoo Kanazawa

@@ -19,9 +19,9 @@ MMPose supported datasets:
 
 ## COCO
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
   author={Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C Lawrence},
@@ -69,9 +69,9 @@ mmpose
 
 ## MPII
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{andriluka14cvpr,
    author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}
    title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},
@@ -120,9 +120,9 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 
 ## MPII-TRB
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{duan2019trb,
   title={TRB: A Novel Triplet Representation for Understanding 2D Human Body},
   author={Duan, Haodong and Lin, Kwan-Yee and Jin, Sheng and Liu, Wentao and Qian, Chen and Ouyang, Wanli},
@@ -156,9 +156,9 @@ mmpose
 
 ## AIC
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @article{wu2017ai,
   title={Ai challenger: A large-scale dataset for going deeper in image understanding},
   author={Wu, Jiahong and Zheng, He and Zhao, Bo and Li, Yixin and Yan, Baoming and Liang, Rui and Wang, Wenjia and Zhou, Shipei and Lin, Guosen and Fu, Yanwei and others},
@@ -197,9 +197,9 @@ mmpose
 
 ## CrowdPose
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @article{li2018crowdpose,
   title={CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark},
   author={Li, Jiefeng and Wang, Can and Zhu, Hao and Mao, Yihuan and Fang, Hao-Shu and Lu, Cewu},
@@ -209,7 +209,7 @@ mmpose
 ```
 
 For [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
-Please download the annotation files from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
+Please download the annotation files and human detection results from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
 For top-down approaches, we follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
 For model training, we follow [HigherHRNet](https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation) to train models on CrowdPose train/val dataset, and evaluate models on CrowdPose test dataset.
 Download and extract them under $MMPOSE/data, and make them look like this:
@@ -238,9 +238,9 @@ mmpose
 
 ## OCHuman
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{zhang2019pose2seg,
   title={Pose2seg: Detection free human instance segmentation},
   author={Zhang, Song-Hai and Li, Ruilong and Dong, Xin and Rosin, Paul and Cai, Zixi and Han, Xi and Yang, Dingcheng and Huang, Haozhi and Hu, Shi-Min},
@@ -275,9 +275,9 @@ mmpose
 
 ## MHP
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{zhao2018understanding,
   title={Understanding humans in crowded scenes: Deep nested adversarial learning and a new benchmark for multi-human parsing},
   author={Zhao, Jian and Li, Jianshu and Cheng, Yu and Sim, Terence and Yan, Shuicheng and Feng, Jiashi},
@@ -325,9 +325,9 @@ mmpose
 
 ## PoseTrack18
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{andriluka2018posetrack,
   title={Posetrack: A benchmark for human pose estimation and tracking},
   author={Andriluka, Mykhaylo and Iqbal, Umar and Insafutdinov, Eldar and Pishchulin, Leonid and Milan, Anton and Gall, Juergen and Schiele, Bernt},
@@ -411,9 +411,9 @@ pip install git+https://github.com/svenkreiss/poseval.git
 
 ## sub-JHMDB dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{Jhuang:ICCV:2013,
     title = {Towards understanding action recognition},
     author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},

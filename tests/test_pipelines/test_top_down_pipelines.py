@@ -11,7 +11,8 @@ from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        TopDownGenerateTarget,
                                        TopDownGetRandomScaleRotation,
                                        TopDownHalfBodyTransform,
-                                       TopDownRandomFlip, ToTensor)
+                                       TopDownRandomFlip,
+                                       TopDownRandomTranslation, ToTensor)
 
 
 def _check_keys_contain(result_keys, target_keys):
@@ -211,4 +212,11 @@ def test_top_down_pipeline():
     assert 'image_file' in results_final['img_metas'].data
 
 
-test_top_down_pipeline()
+def test_random_translation():
+    results = dict(
+        center=np.zeros([2]),
+        scale=1,
+    )
+    pipeline = TopDownRandomTranslation()
+    results = pipeline(results)
+    assert results['center'].shape == (2, )

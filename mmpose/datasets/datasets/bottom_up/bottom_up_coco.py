@@ -7,6 +7,7 @@ import xtcocotools
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
+from mmpose.core.post_processing import oks_nms, soft_oks_nms
 from mmpose.datasets.builder import DATASETS
 from .bottom_up_base_dataset import BottomUpBaseDataset
 
@@ -68,6 +69,15 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # joint index starts from 1
+        self.ann_info['skeleton'] = [[16, 14], [14, 12], [17, 15], [15, 13],
+                                     [12, 13], [6, 12], [7, 13], [6, 7],
+                                     [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
+                                     [1, 2], [1, 3], [2, 4], [3, 5], [4, 6],
+                                     [5, 7]]
+
+        # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
+        # 'pycocotools/cocoeval.py#L523'
         self.sigmas = np.array([
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89
@@ -262,16 +272,17 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                     'area': area,
                 })
 
-        oks_nmsed_kpts = []
+        valid_kpts = []
         for img in kpts.keys():
             img_kpts = kpts[img]
-            keep = []
-            if len(keep) == 0:
-                oks_nmsed_kpts.append(img_kpts)
+            if self.use_nms:
+                nms = soft_oks_nms if self.soft_nms else oks_nms
+                keep = nms(img_kpts, self.oks_thr, sigmas=self.sigmas)
+                valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
-                oks_nmsed_kpts.append([img_kpts[_keep] for _keep in keep])
+                valid_kpts.append(img_kpts)
 
-        self._write_coco_keypoint_results(oks_nmsed_kpts, res_file)
+        self._write_coco_keypoint_results(valid_kpts, res_file)
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)

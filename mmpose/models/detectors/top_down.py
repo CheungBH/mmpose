@@ -11,6 +11,13 @@ from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
 
+try:
+    from mmcv.runner import auto_fp16
+except ImportError:
+    warnings.warn('auto_fp16 from mmpose will be deprecated from v0.15.0'
+                  'Please install mmcv>=1.1.4')
+    from mmpose.core import auto_fp16
+
 
 @POSENETS.register_module()
 class TopDown(BasePose):
@@ -28,17 +35,22 @@ class TopDown(BasePose):
 
     def __init__(self,
                  backbone,
+                 neck=None,
                  keypoint_head=None,
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None,
                  loss_pose=None):
         super().__init__()
+        self.fp16_enabled = False
 
         self.backbone = builder.build_backbone(backbone)
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
+
+        if neck is not None:
+            self.neck = builder.build_neck(neck)
 
         if keypoint_head is not None:
             keypoint_head['train_cfg'] = train_cfg
@@ -57,6 +69,11 @@ class TopDown(BasePose):
         self.init_weights(pretrained=pretrained)
 
     @property
+    def with_neck(self):
+        """Check if has keypoint_head."""
+        return hasattr(self, 'neck')
+
+    @property
     def with_keypoint(self):
         """Check if has keypoint_head."""
         return hasattr(self, 'keypoint_head')
@@ -64,9 +81,12 @@ class TopDown(BasePose):
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
+        if self.with_neck:
+            self.neck.init_weights()
         if self.with_keypoint:
             self.keypoint_head.init_weights()
 
+    @auto_fp16(apply_to=('img', ))
     def forward(self,
                 img,
                 target=None,
@@ -87,7 +107,7 @@ class TopDown(BasePose):
             num_keypoints: K
             num_img_channel: C (Default: 3)
             img height: imgH
-            img weight: imgW
+            img width: imgW
             heatmaps height: H
             heatmaps weight: W
 
@@ -121,6 +141,8 @@ class TopDown(BasePose):
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
         output = self.backbone(img)
+        if self.with_neck:
+            output = self.neck(output)
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
@@ -139,20 +161,24 @@ class TopDown(BasePose):
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == len(img_metas)
-        batch_size = img.size(0)
+        batch_size, _, img_height, img_width = img.shape
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 
         result = {}
 
         features = self.backbone(img)
+        if self.with_neck:
+            features = self.neck(features)
         if self.with_keypoint:
             output_heatmap = self.keypoint_head.inference_model(
                 features, flip_pairs=None)
 
-        if self.test_cfg['flip_test']:
+        if self.test_cfg.get('flip_test', True):
             img_flipped = img.flip(3)
             features_flipped = self.backbone(img_flipped)
+            if self.with_neck:
+                features_flipped = self.neck(features_flipped)
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
                     features_flipped, img_metas[0]['flip_pairs'])
@@ -160,8 +186,8 @@ class TopDown(BasePose):
                                   output_flipped_heatmap) * 0.5
 
         if self.with_keypoint:
-            keypoint_result = self.keypoint_head.decode_keypoints(
-                img_metas, output_heatmap)
+            keypoint_result = self.keypoint_head.decode(
+                img_metas, output_heatmap, img_size=[img_width, img_height])
             result.update(keypoint_result)
 
             if not return_heatmap:
@@ -183,6 +209,8 @@ class TopDown(BasePose):
             Tensor: Output heatmaps.
         """
         output = self.backbone(img)
+        if self.with_neck:
+            output = self.neck(output)
         if self.with_keypoint:
             output = self.keypoint_head(output)
         return output
@@ -195,8 +223,8 @@ class TopDown(BasePose):
                     bbox_color='green',
                     pose_kpt_color=None,
                     pose_limb_color=None,
-                    radius=4,
                     text_color=(255, 0, 0),
+                    radius=4,
                     thickness=1,
                     font_scale=0.5,
                     win_name='',
@@ -210,6 +238,7 @@ class TopDown(BasePose):
             img (str or Tensor): The image to be displayed.
             result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
+            skeleton (list[list]): The connection of keypoints.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
@@ -218,9 +247,13 @@ class TopDown(BasePose):
             pose_limb_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
             text_color (str or tuple or :obj:`Color`): Color of texts.
+            radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             font_scale (float): Font scales of texts.
             win_name (str): The window name.
+            show (bool): Whether to show the image. Default: False.
+            show_keypoint_weight (bool): Whether to change the transparency
+                using the predicted confidence scores of keypoints.
             wait_time (int): Value of waitKey param.
                 Default: 0.
             out_file (str or None): The filename to write the image.

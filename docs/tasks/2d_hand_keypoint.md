@@ -9,12 +9,13 @@ MMPose supported datasets:
 - [FreiHand](#freihand-dataset) \[ [Homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/) \]
 - [CMU Panoptic HandDB](#cmu-panoptic-handdb) \[ [Homepage](http://domedb.perception.cs.cmu.edu/handdb.html) \]
 - [InterHand2.6M](#interhand26m) \[ [Homepage](https://mks0601.github.io/InterHand2.6M/) \]
+- [RHD](#rhd-dataset) \[ [Homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html) \]
 
 ## OneHand10K
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @article{wang2018mask,
   title={Mask-pose cascaded cnn for 2d hand pose estimation from single color image},
   author={Wang, Yangang and Peng, Cong and Liu, Yebin},
@@ -57,9 +58,9 @@ mmpose
 
 ## FreiHAND Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{zimmermann2019freihand,
   title={Freihand: A dataset for markerless capture of hand pose and shape from single rgb images},
   author={Zimmermann, Christian and Ceylan, Duygu and Yang, Jimei and Russell, Bryan and Argus, Max and Brox, Thomas},
@@ -100,9 +101,9 @@ mmpose
 
 ## CMU Panoptic HandDB
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @inproceedings{simon2017hand,
   title={Hand keypoint detection in single images using multiview bootstrapping},
   author={Simon, Tomas and Joo, Hanbyul and Matthews, Iain and Sheikh, Yaser},
@@ -150,9 +151,9 @@ mmpose
 
 ## InterHand2.6M
 
-[DATASET]
+<!-- [DATASET] -->
 
-```latex
+```bibtex
 @article{moon2020interhand2,
   title={InterHand2.6M: A dataset and baseline for 3D interacting hand pose estimation from a single RGB image},
   author={Moon, Gyeongsik and Yu, Shoou-I and Wen, He and Shiratori, Takaaki and Lee, Kyoung Mu},
@@ -189,4 +190,57 @@ mmpose
         |   |   |-- Capture0
         |   |── test
         |   |   |-- Capture0 ~ Capture7
+```
+
+## RHD Dataset
+
+<!-- [DATASET] -->
+
+```bibtex
+@TechReport{zb2017hand,
+  author    = {Christian Zimmermann and Thomas Brox},
+  title     = {Learning to Estimate 3D Hand Pose from Single RGB Images},
+  institution    = {arXiv:1705.01389},
+  year      = {2017},
+  note         = "https://arxiv.org/abs/1705.01389",
+  url          = "https://lmb.informatik.uni-freiburg.de/projects/hand3d/"
+}
+```
+
+For [RHD Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html), please download from [RHD Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html).
+Please download the annotation files from [rhd_annotations](https://download.openmmlab.com/mmpose/datasets/rhd_annotations.zip).
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── rhd
+        |── annotations
+        |   |── rhd_train.json
+        |   |── rhd_test.json
+        `── training
+        |   |── color
+        |   |   |── 00000.jpg
+        |   |   |── 00001.jpg
+        |   |── depth
+        |   |   |── 00000.jpg
+        |   |   |── 00001.jpg
+        |   |── mask
+        |   |   |── 00000.jpg
+        |   |   |── 00001.jpg
+        `── evaluation
+        |   |── color
+        |   |   |── 00000.jpg
+        |   |   |── 00001.jpg
+        |   |── depth
+        |   |   |── 00000.jpg
+        |   |   |── 00001.jpg
+        |   |── mask
+        |   |   |── 00000.jpg
+        |   |   |── 00001.jpg
 ```

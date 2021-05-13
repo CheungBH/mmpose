@@ -2,9 +2,9 @@
 
 ## Introduction
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
-```latex
+```bibtex
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
   author={Newell, Alejandro and Huang, Zhiao and Deng, Jia},
@@ -14,9 +14,9 @@
 }
 ```
 
-[BACKBONE]
+<!-- [BACKBONE] -->
 
-```latex
+```bibtex
 @inproceedings{he2016deep,
   title={Deep residual learning for image recognition},
   author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},

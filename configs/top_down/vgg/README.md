@@ -2,9 +2,9 @@
 
 ## Introduction
 
-[BACKBONE]
+<!-- [BACKBONE] -->
 
-```latex
+```bibtex
 @article{simonyan2014very,
   title={Very deep convolutional networks for large-scale image recognition},
   author={Simonyan, Karen and Zisserman, Andrew},
